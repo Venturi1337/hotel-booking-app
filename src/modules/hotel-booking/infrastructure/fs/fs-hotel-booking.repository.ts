@@ -22,7 +22,7 @@ export class FSHotelBookingRepository implements HotelBookingRepositoryPort {
   async save(booking: HotelBooking): Promise<HotelBooking> {
     await this.fsService.ensureEntityFolder(this.basePath, this.entity);
     await this.fsService.incrementMetadata(this.basePath, this.entity);
-    await this.fsService.writeEntity(this.basePath, this.entity, booking.id, booking);
+    await this.fsService.writeEntity(this.basePath, this.entity, booking._id, booking);
     return booking;
   }
 

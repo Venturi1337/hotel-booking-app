@@ -5,7 +5,6 @@ import { HotelBookingController } from './http/hotel-booking.controller';
 import { HotelBookingSchema } from './domain/mongo/hotel-booking.schema';
 import { FSHotelBookingRepository } from './infrastructure/fs/fs-hotel-booking.repository';
 import { MongoHotelBookingRepository } from './infrastructure/mongo/mongo-hotel-booking.repository';
-import { ConfigService } from 'config/config.service';
 import { FileStorageService } from '../shared/services/file-storage.service';
 import { CreateHotelBookingUseCase } from './application/use-cases/create-hotel-booking.usecase';
 import { GetAllHotelBookingUseCase } from './application/use-cases/get-all-hotel-booking.usecase';
@@ -17,6 +16,7 @@ import { GetOneClientUseCase } from '../client/application/use-cases/get-one-cli
 import { ClientRepositoryPort } from '../client/domain/ports/client.repository.port';
 import { ClientModule } from '../client/client.module';
 import { ValidateClientHotelMiddleware } from './http/middlewares/validate-client-hotel.middleware';
+import { ConfigService } from '../shared/services/config.service';
 
 @Module({
   imports: [

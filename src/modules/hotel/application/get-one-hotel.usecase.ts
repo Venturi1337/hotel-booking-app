@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Hotel } from '../domain/hotel.entity';
 import { HotelRepositoryPort } from '../domain/ports/hotel.repository.port';
-import { GlobalApiResponse } from 'src/api/response';
+import { GlobalApiResponse } from '../../shared/http/response/api.response';
 @Injectable()
 export class GetOneHotelUseCase {
   constructor(@Inject('HotelRepositoryPort') private readonly hotelRepo: HotelRepositoryPort) {}

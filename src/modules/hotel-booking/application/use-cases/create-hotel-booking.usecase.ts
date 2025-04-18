@@ -2,7 +2,7 @@ import { Inject } from '@nestjs/common';
 import { HotelBookingFactory } from '../../domain/hotel-booking.factory';
 import { HotelBookingRepositoryPort } from '../../domain/ports/hotel-booking.repository.port';
 import { CreateHotelBookingDto } from '../../http/dto/create-hotel-booking.dto';
-import { GlobalApiResponse } from 'src/api/response';
+import { GlobalApiResponse } from '../../../shared/http/response/api.response';
 
 export class CreateHotelBookingUseCase {
   constructor(

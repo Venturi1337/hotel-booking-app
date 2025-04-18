@@ -5,12 +5,12 @@ import { HotelController } from './http/hotel.controller';
 import { HotelSchema } from './domain/mongo/hotel.schema';
 import { FSHotelRepository } from './infrastructure/fs/fs-hotel.repository';
 import { MongoHotelRepository } from './infrastructure/mongo/mongo-hotel-repository';
-import { ConfigService } from 'config/config.service';
 import { FileStorageService } from '../shared/services/file-storage.service';
 import { GetOneHotelUseCase } from './application/get-one-hotel.usecase';
 import { GetAllHotelUseCase } from './application/get-all-hotel.usecase';
 import { CreateHotelUseCase } from './application/create-hotel.usecase';
 import { UpdateHotelUseCase } from './application/update-hotel.usecase';
+import { ConfigService } from '../shared/services/config.service';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Hotel', schema: HotelSchema }]),

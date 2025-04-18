@@ -1,10 +1,10 @@
-import { GlobalApiResponse } from 'src/api/response';
-import { HotelBooking } from '../../domain/hotel-booking.entity';
+import { GlobalApiResponse } from '../../../shared/http/response/api.response';
 import { HotelBookingRepositoryPort } from '../../domain/ports/hotel-booking.repository.port';
 import { UpdateHotelBookingDto } from '../../http/dto/update-hotel-booking.dto';
+import { Inject } from '@nestjs/common';
 
 export class UpdateHotelBookingUseCase {
-  constructor(private readonly repo: HotelBookingRepositoryPort) {}
+  constructor(@Inject('HotelBookingRepository') private readonly repo: HotelBookingRepositoryPort) {}
 
   async execute(id: string, dto: UpdateHotelBookingDto): Promise<GlobalApiResponse> {
     try {

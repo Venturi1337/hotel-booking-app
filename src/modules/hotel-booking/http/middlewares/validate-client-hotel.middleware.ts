@@ -1,8 +1,7 @@
-// src/modules/hotel-booking/middleware/validate-client-hotel.middleware.ts
 import { Injectable, NestMiddleware, BadRequestException } from '@nestjs/common';
 import { GetOneHotelUseCase } from '../../../hotel/application/get-one-hotel.usecase';
-import { GetOneClientUseCase } from 'src/modules/client/application/use-cases/get-one-client.use-case';
-import { GlobalApiResponse } from 'src/api/response';
+import { GlobalApiResponse } from '../../../shared/http/response/api.response';
+import { GetOneClientUseCase } from '../../../client/application/use-cases/get-one-client.use-case';
 
 @Injectable()
 export class ValidateClientHotelMiddleware implements NestMiddleware {

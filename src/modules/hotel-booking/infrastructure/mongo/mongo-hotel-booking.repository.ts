@@ -14,7 +14,7 @@ export class MongoHotelBookingRepository implements HotelBookingRepositoryPort {
   }
 
   async findById(id: string): Promise<HotelBooking | null> {
-    return this.hotelBookingModel.findOne({ id }).lean();
+    return this.hotelBookingModel.findOne({ _id: id }).lean();
   }
 
   async save(booking: HotelBooking): Promise<HotelBooking> {

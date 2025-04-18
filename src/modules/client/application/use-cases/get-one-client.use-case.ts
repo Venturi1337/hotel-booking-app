@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ClientRepositoryPort } from '../../domain/ports/client.repository.port';
-import { GlobalApiResponse } from 'src/api/response';
+import { GlobalApiResponse } from '../../../shared/http/response/api.response';
 
 @Injectable()
 export class GetOneClientUseCase {

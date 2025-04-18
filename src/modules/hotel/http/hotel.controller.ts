@@ -6,7 +6,7 @@ import { UpdateHotelDto } from './dto/update-hotel.dto';
 import { GetAllHotelUseCase } from '../application/get-all-hotel.usecase';
 import { UpdateHotelUseCase } from '../application/update-hotel.usecase';
 import { GetOneHotelUseCase } from '../application/get-one-hotel.usecase';
-import { GlobalApiResponse } from 'src/api/response';
+import { GlobalApiResponse } from '../../shared/http/response/api.response';
 
 @ApiTags('hotels')
 @Controller('hotels')

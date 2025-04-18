@@ -6,7 +6,7 @@ import { HotelBooking } from '../domain/hotel-booking.entity';
 import { CreateHotelBookingDto } from './dto/create-hotel-booking.dto';
 import { UpdateHotelBookingDto } from './dto/update-hotel-booking.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
-import { GlobalApiResponse } from 'src/api/response';
+import { GlobalApiResponse } from '../../shared/http/response/api.response';
 import { ValidateClientHotelMiddleware } from './middlewares/validate-client-hotel.middleware';
 
 @ApiTags('hotel-bookings')

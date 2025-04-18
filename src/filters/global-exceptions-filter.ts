@@ -6,8 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { GlobalApiResponse } from 'src/api/response';
-
+import { GlobalApiResponse } from '../modules/shared/http/response/api.response';
 abstract class BaseException extends Error {
   constructor(
     public readonly message: string,

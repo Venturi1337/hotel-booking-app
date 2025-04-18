@@ -1,6 +1,6 @@
 export class HotelBooking {
   constructor(
-    public id: string,
+    public _id: string,
     public clientId: string,
     public hotelId: string,
     public startDate: Date,

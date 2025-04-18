@@ -2,7 +2,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { HotelRepositoryPort } from '../domain/ports/hotel.repository.port';
 import { UpdateHotelDto } from '../http/dto/update-hotel.dto';
-import { GlobalApiResponse } from 'src/api/response';
+import { GlobalApiResponse } from '../../shared/http/response/api.response';
 
 @Injectable()
 export class UpdateHotelUseCase {

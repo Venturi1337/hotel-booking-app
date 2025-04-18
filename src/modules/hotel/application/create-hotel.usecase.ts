@@ -3,7 +3,7 @@ import { Hotel } from '../domain/hotel.entity';
 import { HotelRepositoryPort } from '../domain/ports/hotel.repository.port';
 import { HotelFactory } from '../domain/hotel.factory';
 import { CreateHotelDto } from '../http/dto/create-hotel.dto';
-import { GlobalApiResponse } from 'src/api/response';
+import { GlobalApiResponse } from '../../shared/http/response/api.response';
 
 @Injectable()
 export class CreateHotelUseCase {

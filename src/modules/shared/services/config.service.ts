@@ -22,7 +22,6 @@ export class ConfigService {
   }
 
   get mongoUri(): string {
-    console.log(process.env.MONGO_URI);
     return process.env.MONGO_URI || '';
   }
 }

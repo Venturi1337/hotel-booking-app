@@ -5,7 +5,7 @@ import { ClientController } from './http/client.controller';
 import { ClientSchema } from './domain/mongo/client.schema';
 import { FSClientRepository } from './infrastructure/fs/fs-client.repository';
 import { MongoClientRepository } from './infrastructure/mongo/mongo-client.repository';
-import { ConfigService } from '../../../config/config.service';
+import { ConfigService } from '../shared/services/config.service';
 import { FileStorageService } from '../shared/services/file-storage.service';
 import { CreateClientUseCase } from './application/use-cases/create-client.usecase';
 import { UpdateClientUseCase } from './application/use-cases/update-client.usecase';

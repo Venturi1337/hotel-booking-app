@@ -6,12 +6,12 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "tsc && cp config/config.json dist/config/config.json",
+    "build": "tsc && mkdir -p dist/config && cp config/config.json dist/config/config.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "echo \"No tests configured\" && exit 0",
     "test:e2e": "echo \"No E2E tests configured\" && exit 0"

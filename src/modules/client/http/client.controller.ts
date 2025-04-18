@@ -7,7 +7,7 @@ import { UpdateClientUseCase } from '../application/use-cases/update-client.usec
 import { GetOneClientUseCase } from '../application/use-cases/get-one-client.use-case';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
-import { GlobalApiResponse } from 'src/api/response';
+import { GlobalApiResponse } from '../../shared/http/response/api.response';
 
 @ApiTags('clients')
 @Controller('clients')

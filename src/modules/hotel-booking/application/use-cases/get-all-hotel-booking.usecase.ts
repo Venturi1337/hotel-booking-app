@@ -1,9 +1,9 @@
 import { HotelBookingRepositoryPort } from '../../domain/ports/hotel-booking.repository.port';
-import { HotelBooking } from '../../domain/hotel-booking.entity';
-import { GlobalApiResponse } from 'src/api/response';
+import { GlobalApiResponse } from '../../../shared/http/response/api.response';
+import { Inject } from '@nestjs/common';
 
 export class GetAllHotelBookingUseCase {
-  constructor(private readonly repo: HotelBookingRepositoryPort) {}
+  constructor(@Inject('HotelBookingRepository') private readonly repo: HotelBookingRepositoryPort) {}
 
   async execute(): Promise<GlobalApiResponse> {
     try {

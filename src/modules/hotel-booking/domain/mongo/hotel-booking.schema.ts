@@ -4,7 +4,7 @@ import { HotelBooking } from '../hotel-booking.entity';
 export type HotelBookingDocument = HotelBooking & Document;
 
 export const HotelBookingSchema = new Schema<HotelBooking>({
-  id: { type: String, required: true, unique: true },
+  _id: { type: String, required: true },
   clientId: { type: String, required: true },
   hotelId: { type: String, required: true },
   startDate: { type: Date, required: true },
