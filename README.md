@@ -55,8 +55,22 @@ npm run start:dev
 
 ## ▶️ Cómo Iniciar la Aplicación (Con Docker)
 
-### 1. Ejecutar docker-compose up --build(en caso de necesitarlo)
+### 1. Ejecutar 
+```bash
+docker-compose up --build
+```
 
+```bash
+docker-compose up
+```
+
+### 2. Detener la aplicación
+
+Para detener los contenedores:
+
+```bash
+docker-compose down
+```
 
 ## 🧪 API Docs (Swagger)
 
@@ -88,6 +102,12 @@ Desde ahí puedes probar todos los endpoints (`Clients`, `Hotels`, `HotelBooking
 - Listar reservas
 - Actualizar reserva
 
+### 🔹 Mejoras Recientes
+- Manejo de errores mejorado y estructura de respuesta.
+- Formato de respuesta de API actualizado para usar la clase `GlobalApiResponse` para mensajes de éxito y error consistentes.
+- Refactorización de casos de uso de cliente y hotel para devolver respuestas estructuradas.
+- Middleware de validación añadido para la existencia de cliente y hotel durante la creación de reservas.
+
 ---
 
 ## 🧠 Patrón de Arquitectura
@@ -117,3 +137,7 @@ src/
 ```
 
 ---
+
+## 📜 Información del Proyecto
+
+- Descripción del proyecto y autor actualizados en `package.json`.
