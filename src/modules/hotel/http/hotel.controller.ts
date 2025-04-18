@@ -1,27 +1,50 @@
-
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateHotelUseCase } from '../application/create-hotel.usecase';
 import { Hotel } from '../domain/hotel.entity';
-import { FSHotelRepository } from '../infrastructure/fs/fs-hotel.repository';
+import { CreateHotelDto } from './dto/create-hotel.dto';
+import { UpdateHotelDto } from './dto/update-hotel.dto';
+import { GetAllHotelUseCase } from '../application/get-all-hotel.usecase';
+import { UpdateHotelUseCase } from '../application/update-hotel.usecase';
+import { GetOneHotelUseCase } from '../application/get-one-hotel.usecase';
 
+@ApiTags('hotels')
 @Controller('hotels')
 export class HotelController {
-  private readonly useCase = new CreateHotelUseCase(new FSHotelRepository());
-
+  constructor(
+    private readonly getAllHotel: GetAllHotelUseCase,
+    private readonly createHotel: CreateHotelUseCase,
+    private readonly updateHotel: UpdateHotelUseCase,
+    private readonly getOneHotel: GetOneHotelUseCase,
+  ) {}
   @Get()
+  @ApiOperation({ summary: 'Get all hotels' })
+  @ApiResponse({ status: 200, description: 'Return all hotels.' })
   async getAll(): Promise<Hotel[]> {
-    return await this.useCase['hotelRepo'].findAll();
+    return await this.getAllHotel.execute();
+  }
+
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a hotel by ID' })
+  @ApiResponse({ status: 200, description: 'Return a hotel by ID.' })
+  @ApiResponse({ status: 404, description: 'Hotel not found.' })
+  async getOne(@Param('id') id: string): Promise<Hotel> {
+    return await this.getOneHotel.execute(id);
   }
 
   @Post()
-  async create(@Body() body: { name: string; address: string }): Promise<Hotel> {
-    return await this.useCase.execute(body.name, body.address);
+  @ApiOperation({ summary: 'Create a new hotel' })
+  @ApiResponse({ status: 201, description: 'The hotel has been successfully created.' })
+  async create(@Body() body: CreateHotelDto): Promise<Hotel> {
+    return await this.createHotel.execute(body.name, body.address);
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() body: { name: string; address: string }) {
-    const hotel = new Hotel(id, body.name, body.address, new Date());
-    await this.useCase['hotelRepo'].update(hotel);
-    return hotel;
+  @ApiOperation({ summary: 'Update a hotel by ID' })
+  @ApiResponse({ status: 200, description: 'The hotel has been successfully updated.' })
+  @ApiResponse({ status: 404, description: 'Hotel not found.' })
+  async update(@Param('id') id: string, @Body() body: UpdateHotelDto) {
+    await this.updateHotel.execute(id, body);
   }
 }

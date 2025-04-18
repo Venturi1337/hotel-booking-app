@@ -1,99 +1,123 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🏨 Hotel Booking App (NestJS + Hexagonal Architecture)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Aplicación desarrollada en **NestJS** con arquitectura **hexagonal** (puertos y adaptadores), capaz de funcionar tanto con persistencia en **MongoDB** como en el **sistema de archivos** (FS), configurable vía archivo.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📁 Arquitectura del Proyecto
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+La aplicación está organizada por **módulos** (`Client`, `Hotel`, `HotelBooking`) siguiendo principios de **Clean Architecture** y **Domain-Driven Design (DDD)**. Cada módulo contiene:
 
-## Project setup
+- `domain/`: Entidades, interfaces (puertos), fábricas y esquemas de Mongo
+- `application/`: Casos de uso (use-cases)
+- `infrastructure/`: Adaptadores de persistencia (FS, Mongo) y fábricas de repositorios (bridge pattern)
+- `http/`: Controladores y DTOs
+- `module.ts`: Registro dinámico del módulo (`register(config)`)
 
-```bash
-$ npm install
+---
+
+## ⚙️ Configuración
+
+La configuración se carga desde un archivo JSON. Por ejemplo:
+
+`config/config.json`:
+
+```json
+{
+  "dataType": "FS",
+  "fsFolder": "./storage",
+}
 ```
 
-## Compile and run the project
+- `dataType`: `"FS"` o `"DB"` para definir el tipo de persistencia
+- `fsFolder`: Ruta de almacenamiento para el modo FS
+
+---
+
+## ▶️ Cómo Iniciar la Aplicación (Mongo instalado de manera local)
+
+### 1. Instalar dependencias
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+### 2. Compilar y ejecutar
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run start:dev
 ```
 
-## Deployment
+> Asegúrate de tener Mongo corriendo si estás usando `"dataType": "DB"`
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
 
-```bash
-$ npm install -g mau
-$ mau deploy
+## ▶️ Cómo Iniciar la Aplicación (Con Docker)
+
+### 1. Ejecutar docker-compose up --build(en caso de necesitarlo)
+
+
+## 🧪 API Docs (Swagger)
+
+Una vez en ejecución, accede a Swagger desde:
+
+```
+http://localhost:3000/api
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Desde ahí puedes probar todos los endpoints (`Clients`, `Hotels`, `HotelBookings`) con sus respectivos DTOs.
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## 🛠️ Casos de Uso Implementados
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 🔹 Client
+- Crear cliente
+- Listar clientes
+- Actualizar cliente
 
-## Support
+### 🔹 Hotel
+- Crear hotel
+- Listar hoteles
+- Obtener hotel por ID
+- Actualizar hotel
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 🔹 HotelBooking
+- Crear reserva
+- Listar reservas
+- Actualizar reserva
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 🧠 Patrón de Arquitectura
 
-## License
+El proyecto sigue:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- ✅ **Hexagonal Architecture (Ports & Adapters)**
+- ✅ **Inversión de dependencias**
+- ✅ **Bridge pattern** para seleccionar el tipo de persistencia
+- ✅ **Open/Closed Principle** en la carga de repositorios
+- ✅ **Validación de existencia** antes de actualizar entidades
+
+---
+
+## 📦 Estructura de carpetas
+
+```
+src/
+├── modules/
+│   ├── client/
+│   ├── hotel/
+│   ├── hotel-booking/
+│   └── shared/
+├── config/
+│   └── config.service.ts
+└── main.ts
+```
+
+---
+
+## 🧾 Licencia
+
+MIT

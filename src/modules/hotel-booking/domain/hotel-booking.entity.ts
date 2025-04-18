@@ -1,11 +1,10 @@
-// src/modules/hotel-booking/domain/hotel-booking.entity.ts
 export class HotelBooking {
   constructor(
-    public readonly _id: number,
-    public name: string,
-    public address: string,
-    public createdDate: Date,
-    public hotelId: number,
-    public clientId: number
+    public id: string,
+    public clientId: string,
+    public hotelId: string,
+    public startDate: Date,
+    public endDate: Date,
+    public createdDate: Date
   ) {}
 }

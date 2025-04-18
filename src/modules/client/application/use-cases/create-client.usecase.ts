@@ -13,6 +13,7 @@ export class CreateClientUseCase {
       createClientDto.address,
       createClientDto.phone,
     );
+    
     await this.clientRepo.save(client);
     return client;
   }

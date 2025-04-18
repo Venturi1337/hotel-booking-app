@@ -14,8 +14,8 @@ export class AppModule {
     const imports = [
       SharedModule,
       ClientModule.register(config),
-      // HotelModule.register(config),
-      // HotelBookingModule.register(config),
+      HotelModule.register(config),
+      HotelBookingModule.register(config), 
     ];
 
     if (config.dataType === 'DB') {

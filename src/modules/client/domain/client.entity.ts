@@ -1,4 +1,3 @@
-// src/modules/client/domain/client.entity.ts
 export class Client {
   constructor(
     public readonly _id: string,

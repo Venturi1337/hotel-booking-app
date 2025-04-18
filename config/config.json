@@ -1,5 +1,4 @@
 {
-  "DATA_TYPE": "FS",
-  "FS_FOLDER": "./data",
-  "MONGO_URI": "mongodb://localhost:27017/hotel-app"
+  "DATA_TYPE": "DB",
+  "FS_FOLDER": "./data"
 }

@@ -1,12 +1,13 @@
-// config/config.service.ts
 import * as fs from 'fs';
 import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 export class ConfigService {
   private config: any;
 
   constructor() {
-    // Ruta absoluta relativa al directorio de ejecución (no __dirname)
     const configPath = path.join(process.cwd(), 'config/config.json');
     const raw = fs.readFileSync(configPath, 'utf-8');
     this.config = JSON.parse(raw);
@@ -21,6 +22,7 @@ export class ConfigService {
   }
 
   get mongoUri(): string {
-    return this.config.MONGO_URI;
+    console.log(process.env.MONGO_URI);
+    return process.env.MONGO_URI || '';
   }
 }
