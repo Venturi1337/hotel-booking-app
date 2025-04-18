@@ -1,103 +1,77 @@
-import { Module, DynamicModule, Provider } from "@nestjs/common";
-import { MongooseModule, getModelToken } from "@nestjs/mongoose";
-import { FileStorageService } from "../shared/services/file-storage.service";
-import { ConfigService } from "config/config.service";
-import { HotelBooking } from "./domain/hotel-booking.entity";
-import { HotelBookingRepositoryPort } from "./domain/ports/hotel-booking.repository.port";
-import { HotelBookingSchema } from "./domain/mongo/hotel-booking.schema";
-import { HotelRepositoryPort } from "../hotel/domain/ports/hotel.repository.port";
-import { Model } from "mongoose";
-import { CreateHotelBookingUseCase } from "./application/use-cases/create-hotel-booking.usecase";
-import { HotelBookingController } from "./http/hotel-booking.controller";
-import { GetAllHotelBookingUseCase } from "./application/use-cases/get-all-hotel-booking.usecase";
-import { UpdateHotelBookingUseCase } from "./application/use-cases/update-hotel-booking.usecase";
-import { FSHotelBookingRepository } from "./infrastructure/fs/fs-hotel-booking.repository";
-import { MongoHotelBookingRepository } from "./infrastructure/mongo/mongo-hotel-booking.repository";
-import { SharedModule } from "../shared/shared.module";
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { SharedModule } from '../shared/shared.module';
+import { HotelBookingController } from './http/hotel-booking.controller';
+import { HotelBookingSchema } from './domain/mongo/hotel-booking.schema';
+import { FSHotelBookingRepository } from './infrastructure/fs/fs-hotel-booking.repository';
+import { MongoHotelBookingRepository } from './infrastructure/mongo/mongo-hotel-booking.repository';
+import { ConfigService } from 'config/config.service';
+import { FileStorageService } from '../shared/services/file-storage.service';
+import { CreateHotelBookingUseCase } from './application/use-cases/create-hotel-booking.usecase';
+import { GetAllHotelBookingUseCase } from './application/use-cases/get-all-hotel-booking.usecase';
+import { UpdateHotelBookingUseCase } from './application/use-cases/update-hotel-booking.usecase';
 import { GetOneHotelUseCase } from '../hotel/application/get-one-hotel.usecase';
-import { HotelModule } from "../hotel/hotel.module";
+import { HotelModule } from '../hotel/hotel.module';
+import { HotelRepositoryPort } from '../hotel/domain/ports/hotel.repository.port';
+import { GetOneClientUseCase } from '../client/application/use-cases/get-one-client.use-case';
+import { ClientRepositoryPort } from '../client/domain/ports/client.repository.port';
+import { ClientModule } from '../client/client.module';
+import { ValidateClientHotelMiddleware } from './http/middlewares/validate-client-hotel.middleware';
 
-@Module({})
-export class HotelBookingModule {
-  static register(config: ConfigService): DynamicModule {
-    const hotelRepositoryFactory = (
-      fsService: FileStorageService,
-      config: ConfigService,
-      hotelBookingModel?: Model<HotelBooking>,
-    ): HotelBookingRepositoryPort => {
-      if (config.dataType === 'FS') {
-        return new FSHotelBookingRepository(config.fsFolder, fsService);
-      }
-      if (!hotelBookingModel) {
-        throw new Error('HotelBookingModel is required in DB mode');
-      }
-      return new MongoHotelBookingRepository(hotelBookingModel as Model<HotelBooking>);
-    };
-
-    const useFactory = (
-      fsService: FileStorageService,
-      hotelBookingModel?: Model<HotelBooking>,
-    ) => {
-      return hotelRepositoryFactory(fsService, config, hotelBookingModel!);
-    };
-
-    const repoProvider: Provider = {
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: 'HotelBooking', schema: HotelBookingSchema }]),
+    SharedModule,
+    ClientModule,
+    HotelModule,
+  ],
+  controllers: [HotelBookingController],
+  providers: [
+    ValidateClientHotelMiddleware,
+    ConfigService,
+    {
       provide: 'HotelBookingRepository',
-      useFactory,
-      inject:
-        config.dataType === 'FS'
-          ? [FileStorageService]
-          : [FileStorageService, getModelToken('HotelBooking')],
-    };
-
-    const mongoImports = config.dataType === 'DB'
-      ? [MongooseModule.forFeature([{ name: 'HotelBooking', schema: HotelBookingSchema }])]
-      : [];
-
-    return {
-      module: HotelBookingModule,
-      imports: [
-        ...mongoImports,
-        SharedModule,
-        HotelModule.register(config),
-      ],
-      controllers: [HotelBookingController],
-      providers: [
-        repoProvider,
-        {
-          provide: CreateHotelBookingUseCase,
-          useFactory: (
-            repo: HotelBookingRepositoryPort,
-            getOneHotelUseCase: GetOneHotelUseCase,
-          ) => new CreateHotelBookingUseCase(repo, getOneHotelUseCase),
-          inject: ['HotelBookingRepository', GetOneHotelUseCase],
-        },
-        {
-          provide: GetAllHotelBookingUseCase,
-          useFactory: (repo: HotelBookingRepositoryPort) =>
-            new GetAllHotelBookingUseCase(repo),
-          inject: ['HotelBookingRepository'],
-        },
-        {
-          provide: UpdateHotelBookingUseCase,
-          useFactory: (repo: HotelBookingRepositoryPort) =>
-            new UpdateHotelBookingUseCase(repo),
-          inject: ['HotelBookingRepository'],
-        },
-        {
-          provide: GetOneHotelUseCase,
-          useFactory: (hotelRepo: HotelRepositoryPort) =>
-            new GetOneHotelUseCase(hotelRepo),
-          inject: ['HotelRepository'],
-        },
-      ],
-      exports: [
-        'HotelBookingRepository',
-        CreateHotelBookingUseCase,
-        GetAllHotelBookingUseCase,
-        UpdateHotelBookingUseCase,
-        GetOneHotelUseCase,
-      ],
-    };
+      useFactory: (configService: ConfigService, fsService: FileStorageService, mongoRepo: MongoHotelBookingRepository) => {
+        const dataType = configService.dataType;
+        return dataType === 'FS' ? new FSHotelBookingRepository(configService.fsFolder, fsService) : mongoRepo;
+      },
+      inject: [ConfigService, FileStorageService, MongoHotelBookingRepository],
+    },
+    {
+      provide: 'HotelBookingRepositoryPort',
+      useExisting: 'HotelBookingRepository',
+    },
+    MongoHotelBookingRepository,
+    CreateHotelBookingUseCase,
+    GetAllHotelBookingUseCase,
+    UpdateHotelBookingUseCase,
+    {
+      provide: GetOneClientUseCase,
+      useFactory: (clientRepo: ClientRepositoryPort) => new GetOneClientUseCase(clientRepo),
+      inject: ['ClientRepository'],
+    },
+    {
+      provide: GetOneHotelUseCase,
+      useFactory: (hotelRepo: HotelRepositoryPort) => new GetOneHotelUseCase(hotelRepo),
+      inject: ['HotelRepository'],
+    },
+  ],
+  exports: [
+    'HotelBookingRepository',
+    'HotelBookingRepositoryPort',
+    CreateHotelBookingUseCase,
+    GetAllHotelBookingUseCase,
+    UpdateHotelBookingUseCase,
+    GetOneHotelUseCase,
+  ],
+})
+export class HotelBookingModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(ValidateClientHotelMiddleware)
+      .forRoutes({
+        path: 'hotel-bookings',
+        method: RequestMethod.POST,
+      });
   }
 }

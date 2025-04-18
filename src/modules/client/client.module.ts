@@ -1,87 +1,50 @@
-import { Module, DynamicModule, Provider } from '@nestjs/common';
-import { getModelToken, MongooseModule } from '@nestjs/mongoose';
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { SharedModule } from '../shared/shared.module';
 import { ClientController } from './http/client.controller';
+import { ClientSchema } from './domain/mongo/client.schema';
 import { FSClientRepository } from './infrastructure/fs/fs-client.repository';
 import { MongoClientRepository } from './infrastructure/mongo/mongo-client.repository';
-import { CreateClientUseCase } from './application/use-cases/create-client.usecase';
-import { ClientDocument, ClientSchema } from './domain/mongo/client.schema';
 import { ConfigService } from '../../../config/config.service';
-import { ClientRepositoryPort } from './domain/ports/client.repository.port';
+import { FileStorageService } from '../shared/services/file-storage.service';
+import { CreateClientUseCase } from './application/use-cases/create-client.usecase';
 import { UpdateClientUseCase } from './application/use-cases/update-client.usecase';
 import { GetAllClientUseCase } from './application/use-cases/get-all-client.use-case';
-import { SharedModule } from '../shared/shared.module';
-import { Client } from './domain/client.entity';
-import { Model } from 'mongoose';
-import { FileStorageService } from '../shared/services/file-storage.service';
+import { GetOneClientUseCase } from './application/use-cases/get-one-client.use-case';
 
-@Module({})
-export class ClientModule {
-  static register(config: ConfigService): DynamicModule {
-    const clientRepositoryFactory = (
-      fsService: FileStorageService,
-      config: ConfigService,
-      clientModel?: Model<Client>,
-    ): ClientRepositoryPort => {
-      if (config.dataType === 'FS') {
-        return new FSClientRepository(config.fsFolder, fsService);
-      }
-      if (!clientModel) {
-        throw new Error('ClientModel is required in DB mode');
-      }
-      return new MongoClientRepository(clientModel as Model<ClientDocument>);
-    };
-
-    const useFactory = (
-      fsService: FileStorageService,
-      clientModel?: Model<Client>,
-    ) => {
-      return clientRepositoryFactory(fsService, config, clientModel!);
-    };
-
-    const repoProvider: Provider = {
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: 'Client', schema: ClientSchema }]),
+    SharedModule,
+  ],
+  controllers: [ClientController],
+  providers: [
+    ConfigService,
+    {
       provide: 'ClientRepository',
-      useFactory,
-      inject:
-        config.dataType === 'FS'
-          ? [FileStorageService]
-          : [FileStorageService, getModelToken('Client')],
-    };
-
-    const mongoImports =
-      config.dataType === 'DB'
-        ? [
-            MongooseModule.forFeature([
-              { name: 'Client', schema: ClientSchema },
-            ]),
-          ]
-        : [];
-
-    return {
-      module: ClientModule,
-      imports: [...mongoImports, SharedModule],
-      controllers: [ClientController],
-      providers: [
-        repoProvider,
-        {
-          provide: CreateClientUseCase,
-          useFactory: (repo: ClientRepositoryPort) =>
-            new CreateClientUseCase(repo),
-          inject: ['ClientRepository'],
-        },
-        {
-          provide: UpdateClientUseCase,
-          useFactory: (repo: ClientRepositoryPort) =>
-            new UpdateClientUseCase(repo),
-          inject: ['ClientRepository'],
-        },
-        {
-          provide: GetAllClientUseCase,
-          useFactory: (repo: ClientRepositoryPort) =>
-            new GetAllClientUseCase(repo),
-          inject: ['ClientRepository'],
-        },
-      ],
-      exports: [CreateClientUseCase, UpdateClientUseCase, GetAllClientUseCase],
-    };
-  }
-}
+      useFactory: (configService: ConfigService, fsService: FileStorageService, mongoRepo: MongoClientRepository) => {
+        const dataType = configService.dataType;
+        return dataType === 'FS' ? new FSClientRepository(configService.fsFolder, fsService) : mongoRepo;
+      },
+      inject: [ConfigService, FileStorageService, MongoClientRepository],
+    },
+    {
+      provide: 'ClientRepositoryPort',
+      useExisting: 'ClientRepository',
+    },
+    MongoClientRepository,
+    CreateClientUseCase,
+    UpdateClientUseCase,
+    GetAllClientUseCase,
+    GetOneClientUseCase,
+  ],
+  exports: [
+    'ClientRepository',
+    'ClientRepositoryPort',
+    CreateClientUseCase,
+    UpdateClientUseCase,
+    GetAllClientUseCase,
+    GetOneClientUseCase,
+  ],
+})
+export class ClientModule {}

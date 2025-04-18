@@ -1,13 +1,18 @@
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { HotelRepositoryPort } from '../domain/ports/hotel.repository.port';
 import { UpdateHotelDto } from '../http/dto/update-hotel.dto';
+import { GlobalApiResponse } from 'src/api/response';
 
 @Injectable()
 export class UpdateHotelUseCase {
-  constructor(private readonly hotelRepo: HotelRepositoryPort) {}
+  constructor(@Inject('HotelRepositoryPort') private readonly hotelRepo: HotelRepositoryPort) {}
 
-  async execute(id: string, hotelDto: UpdateHotelDto): Promise<any> {
-    return await this.hotelRepo.update(id, hotelDto);
+  async execute(id: string, hotelDto: UpdateHotelDto): Promise<GlobalApiResponse> {
+    await this.hotelRepo.update(id, hotelDto);
+    return GlobalApiResponse.success({
+      message: 'Hotel updated successfully',
+      data: hotelDto,
+    });
   }
 }

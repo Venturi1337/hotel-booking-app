@@ -1,13 +1,18 @@
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Hotel } from '../domain/hotel.entity';
 import { HotelRepositoryPort } from '../domain/ports/hotel.repository.port';
+import { GlobalApiResponse } from 'src/api/response';
 
 @Injectable()
 export class GetAllHotelUseCase {
-  constructor(private readonly hotelRepo: HotelRepositoryPort) {}
+  constructor(@Inject('HotelRepositoryPort')  private readonly hotelRepo: HotelRepositoryPort) {}
 
-  async execute(): Promise<Hotel[]> {
-    return await this.hotelRepo.findAll();
+  async execute(): Promise<GlobalApiResponse> {
+    const hotels = await this.hotelRepo.findAll();
+    return GlobalApiResponse.success({
+      message: 'Hotels fetched successfully',
+      data: hotels,
+    });
   }
 }

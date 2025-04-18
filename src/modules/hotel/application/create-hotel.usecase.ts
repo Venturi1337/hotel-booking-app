@@ -1,16 +1,23 @@
-
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { Hotel } from '../domain/hotel.entity';
 import { HotelRepositoryPort } from '../domain/ports/hotel.repository.port';
-import { v4 as uuidv4 } from 'uuid';
 import { HotelFactory } from '../domain/hotel.factory';
+import { CreateHotelDto } from '../http/dto/create-hotel.dto';
+import { GlobalApiResponse } from 'src/api/response';
+
 @Injectable()
 export class CreateHotelUseCase {
-  constructor(private readonly hotelRepo: HotelRepositoryPort) {}
+  constructor(
+    @Inject('HotelRepositoryPort') // Use the string token for injection
+    private readonly hotelRepo: HotelRepositoryPort
+  ) {}
 
-  async execute(name: string, address: string): Promise<Hotel> {
-    const hotel = HotelFactory.create(name, address);
+  async execute(dto: CreateHotelDto): Promise<GlobalApiResponse> {
+    const hotel = HotelFactory.create(dto);
     await this.hotelRepo.save(hotel);
-    return hotel;
+    return GlobalApiResponse.success({
+      message: 'Hotel created successfully',
+      data: hotel,
+    });
   }
 }

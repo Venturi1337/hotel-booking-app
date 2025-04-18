@@ -4,8 +4,10 @@ import { Client } from '../domain/client.entity';
 import { GetAllClientUseCase } from '../application/use-cases/get-all-client.use-case';
 import { CreateClientUseCase } from '../application/use-cases/create-client.usecase';
 import { UpdateClientUseCase } from '../application/use-cases/update-client.usecase';
+import { GetOneClientUseCase } from '../application/use-cases/get-one-client.use-case';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { GlobalApiResponse } from 'src/api/response';
 
 @ApiTags('clients')
 @Controller('clients')
@@ -14,6 +16,7 @@ export class ClientController {
     private readonly getAllClient: GetAllClientUseCase,
     private readonly createClient: CreateClientUseCase,
     private readonly updateClient: UpdateClientUseCase,
+    private readonly getOneClient: GetOneClientUseCase,
   ) {}
 
   @Get()
@@ -21,6 +24,13 @@ export class ClientController {
   @ApiResponse({ status: 200, description: 'List of clients retrieved successfully.' })
   async getAll(): Promise<Client[]> {
     return await this.getAllClient.execute();
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Retrieve a client by ID' })
+  @ApiResponse({ status: 200, description: 'Client retrieved successfully.' })
+  async getOne(@Param('id') id: string): Promise<GlobalApiResponse> {
+    return await this.getOneClient.execute(id);
   }
 
   @Post()

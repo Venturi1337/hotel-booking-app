@@ -1,16 +1,27 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Hotel } from '../domain/hotel.entity';
 import { HotelRepositoryPort } from '../domain/ports/hotel.repository.port';
-
+import { GlobalApiResponse } from 'src/api/response';
 @Injectable()
 export class GetOneHotelUseCase {
-  constructor(private readonly hotelRepo: HotelRepositoryPort) {}
+  constructor(@Inject('HotelRepositoryPort') private readonly hotelRepo: HotelRepositoryPort) {}
 
-  async execute(hotelId: string): Promise<Hotel> {
-    const hotel = await this.hotelRepo.findById(hotelId);
-    if (!hotel) {
-      throw new NotFoundException(`Hotel with ID ${hotelId} not found`);
+  async execute(hotelId: string): Promise<GlobalApiResponse> {
+    try {
+      const hotel = await this.hotelRepo.findById(hotelId);
+      if (!hotel) {
+        throw new NotFoundException(`Hotel with ID ${hotelId} not found`);
+      }
+      return GlobalApiResponse.success({
+        statusCode: 200,
+        data: hotel,
+        message: 'Hotel retrieved successfully',
+      });
+    } catch (error) {
+      return GlobalApiResponse.error({
+        statusCode: error.status,
+        message: error.message,
+      });
     }
-    return hotel;
   }
 }

@@ -1,39 +1,47 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import { Response } from 'express';
+import { GlobalApiResponse } from 'src/api/response';
+
+abstract class BaseException extends Error {
+  constructor(
+    public readonly message: string,
+    public readonly statusCode: number,
+  ) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
 
 @Catch()
-export class GlobalExceptionsFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
+export class HttpExceptionFilter implements ExceptionFilter {
+  catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
-    const request = ctx.getRequest();
+    const response = ctx.getResponse<Response>();
 
-    const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'Internal server error';
 
-    const message = exception instanceof HttpException
-      ? exception.getResponse()
-      : 'Internal server error';
-
-    // Check for specific validation error and modify the response
-    if (status === HttpStatus.INTERNAL_SERVER_ERROR && typeof message === 'object' && message['message']) {
-      const errorMessage = message['message'];
-      if (errorMessage.includes('Client validation failed')) {
-        return response.status(HttpStatus.NOT_FOUND).json({
-          statusCode: HttpStatus.NOT_FOUND,
-          timestamp: new Date().toISOString(),
-          path: request.url,
-          message: 'Resource not found due to validation error',
-        });
-      }
+    if (exception instanceof BaseException) {
+      status = exception.statusCode;
+      message = exception.message;
+    } else if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      message = exception.message;
     }
 
-    response.status(status).json({
+    const errorResponse = GlobalApiResponse.error({
+      message: message,
+      stack:
+        process.env.NODE_ENV === 'development' ? exception.stack : undefined,
       statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-      message,
     });
+
+    response.status(status).json(errorResponse);
   }
 }
