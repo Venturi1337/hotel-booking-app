@@ -15,6 +15,7 @@ export class CreateHotelUseCase {
   async execute(dto: CreateHotelDto): Promise<GlobalApiResponse> {
     const hotel = HotelFactory.create(dto);
     await this.hotelRepo.save(hotel);
+
     return GlobalApiResponse.success({
       message: 'Hotel created successfully',
       data: hotel,
