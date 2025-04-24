@@ -14,25 +14,35 @@ import { GetOneClientUseCase } from './application/use-cases/get-one-client.use-
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Client', schema: ClientSchema }]),
     SharedModule,
+    ...((() => {
+      const configService = new ConfigService();
+      return configService.dataType !== 'FS' ? [MongooseModule.forFeature([{ name: 'Client', schema: ClientSchema }])] : [];
+    })()),
   ],
   controllers: [ClientController],
   providers: [
     ConfigService,
     {
       provide: 'ClientRepository',
-      useFactory: (configService: ConfigService, fsService: FileStorageService, mongoRepo: MongoClientRepository) => {
+      useFactory: (configService: ConfigService, fsService: FileStorageService, mongoRepo?: MongoClientRepository) => {
         const dataType = configService.dataType;
-        return dataType === 'FS' ? new FSClientRepository(configService.fsFolder, fsService) : mongoRepo;
+        return dataType === 'FS' ? new FSClientRepository(configService.fsFolder, fsService) : mongoRepo!;
       },
-      inject: [ConfigService, FileStorageService, MongoClientRepository],
+      inject: [
+        ConfigService, 
+        FileStorageService, 
+        ...(new ConfigService().dataType !== 'FS' ? [MongoClientRepository] : [])
+      ],
     },
     {
       provide: 'ClientRepositoryPort',
       useExisting: 'ClientRepository',
     },
-    MongoClientRepository,
+    ...((() => {
+      const configService = new ConfigService();
+      return configService.dataType !== 'FS' ? [MongoClientRepository] : [];
+    })()),
     CreateClientUseCase,
     UpdateClientUseCase,
     GetAllClientUseCase,

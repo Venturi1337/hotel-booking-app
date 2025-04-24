@@ -5,10 +5,10 @@ export type HotelBookingDocument = HotelBooking & Document;
 
 export const HotelBookingSchema = new Schema<HotelBooking>({
   _id: { type: String, required: true },
-  clientId: { type: String, required: true },
-  hotelId: { type: String, required: true },
-  startDate: { type: Date, required: true },
-  endDate: { type: Date, required: true },
+  clientId: { type: String, required: true, ref: 'Client' },
+  hotelId: { type: String, required: true, ref: 'Hotel' },
+  name: { type: String, required: true },
+  address: { type: String, required: true },
   createdDate: { type: Date, required: true }
 });
 

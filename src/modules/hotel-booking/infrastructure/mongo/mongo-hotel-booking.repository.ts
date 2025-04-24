@@ -7,10 +7,16 @@ import { UpdateHotelBookingDto } from '../../http/dto/update-hotel-booking.dto';
 
 @Injectable()
 export class MongoHotelBookingRepository implements HotelBookingRepositoryPort {
-  constructor(@InjectModel('HotelBooking') private readonly hotelBookingModel: Model<HotelBooking>) {}
+  constructor(
+    @InjectModel('HotelBooking')
+    private readonly hotelBookingModel: Model<HotelBooking>,
+  ) {}
 
-  async findAll(): Promise<HotelBooking[]> {
-    return this.hotelBookingModel.find().lean();
+  async findAll(options?: any): Promise<HotelBooking[]> {
+    return this.hotelBookingModel.find(options)
+      .populate('clientId')
+      .populate('hotelId')
+      .lean();
   }
 
   async findById(id: string): Promise<HotelBooking | null> {
@@ -20,7 +26,7 @@ export class MongoHotelBookingRepository implements HotelBookingRepositoryPort {
   async save(booking: HotelBooking): Promise<HotelBooking> {
     const doc = new this.hotelBookingModel(booking);
     await doc.save();
-    return booking;
+    return doc;
   }
 
   async update(id: string, dto: UpdateHotelBookingDto): Promise<void> {

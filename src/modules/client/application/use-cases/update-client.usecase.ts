@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientRepositoryPort } from '../../domain/ports/client.repository.port';
 import { UpdateClientDto } from '../../http/dto/update-client.dto';
-import { GlobalApiResponse } from 'src/modules/shared/http/response/api.response';
+import { GlobalApiResponse } from '../../../shared/http/response/api.response';
 
 @Injectable()
 export class UpdateClientUseCase {

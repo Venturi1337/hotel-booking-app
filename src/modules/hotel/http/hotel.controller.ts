@@ -21,11 +21,17 @@ export class HotelController {
   @ApiOperation({ summary: 'Get all hotels' })
   @ApiResponse({ status: 200, description: 'Return all hotels.' })
   async getAll(): Promise<GlobalApiResponse> {
-    const response = await this.getAllHotel.execute();
-    if (!response.success) {
-      throw new HttpException(response.data.message, response.data.statusCode);
+    try {
+      const response = await this.getAllHotel.execute();
+      if (!response.success) {
+        throw new HttpException(response.data.message, response.data.statusCode);
+      }
+      return response;
+    } catch (error) {
+      console.log('error', error);
+      throw new HttpException(error.message, 500);
     }
-    return response;
+
   }
 
 

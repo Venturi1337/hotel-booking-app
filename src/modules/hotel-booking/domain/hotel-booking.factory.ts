@@ -4,7 +4,7 @@ import { CreateHotelBookingDto } from '../http/dto/create-hotel-booking.dto';
 
 export class HotelBookingFactory {
   static create(createHotelBookingDto: CreateHotelBookingDto): HotelBooking {
-    const { clientId, hotelId, startDate, endDate } = createHotelBookingDto;
-    return new HotelBooking(uuidv4(), clientId, hotelId, startDate, endDate, new Date());
+    const { clientId, hotelId, name, address } = createHotelBookingDto;
+    return new HotelBooking(uuidv4(), clientId, hotelId, name, address, new Date());
   }
 }

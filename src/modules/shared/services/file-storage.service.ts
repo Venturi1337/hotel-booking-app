@@ -59,7 +59,7 @@ export class FileStorageService {
     } 
   }
 
-  async updateById(basePath: string, entity: string, id: string, data: any): Promise<void> {
+  async updateById(basePath: string, entity: string, id: string, data: any): Promise<void> { 
     const filePath = path.join(basePath, entity, `${id}.json`);
     await fs.writeFile(filePath, JSON.stringify(data, null, 2));
   }

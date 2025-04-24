@@ -1,10 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientRepositoryPort } from '../../domain/ports/client.repository.port';
-import { GlobalApiResponse } from 'src/modules/shared/http/response/api.response';
+import { GlobalApiResponse } from '../../../shared/http/response/api.response';
 
 @Injectable()
 export class GetAllClientUseCase {
-  constructor(@Inject('ClientRepositoryPort') private readonly clientRepo: ClientRepositoryPort) {}
+  constructor(
+    @Inject('ClientRepositoryPort')
+    private readonly clientRepo: ClientRepositoryPort,
+  ) {}
 
   async execute(): Promise<GlobalApiResponse> {
     try {
@@ -13,12 +16,13 @@ export class GetAllClientUseCase {
         statusCode: 200,
         data: clients,
         message: 'Clients retrieved successfully',
-    });
-  } catch (error) {
-    return GlobalApiResponse.error({
-      statusCode: error.status,
-        message: error.message,
       });
-    } 
+    } catch (error) {
+      console.log(error);
+      return GlobalApiResponse.error({
+        statusCode: error?.status,
+        message: error?.message,
+      });
+    }
   }
 }

@@ -20,10 +20,13 @@ import { ConfigService } from '../shared/services/config.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'HotelBooking', schema: HotelBookingSchema }]),
     SharedModule,
     ClientModule,
     HotelModule,
+    ...((() => {
+      const configService = new ConfigService();
+      return configService.dataType !== 'FS' ? [MongooseModule.forFeature([{ name: 'HotelBooking', schema: HotelBookingSchema }])] : [];
+    })()),
   ],
   controllers: [HotelBookingController],
   providers: [
@@ -31,17 +34,24 @@ import { ConfigService } from '../shared/services/config.service';
     ConfigService,
     {
       provide: 'HotelBookingRepository',
-      useFactory: (configService: ConfigService, fsService: FileStorageService, mongoRepo: MongoHotelBookingRepository) => {
+      useFactory: (configService: ConfigService, fsService: FileStorageService, mongoRepo?: MongoHotelBookingRepository) => {
         const dataType = configService.dataType;
-        return dataType === 'FS' ? new FSHotelBookingRepository(configService.fsFolder, fsService) : mongoRepo;
+        return dataType === 'FS' ? new FSHotelBookingRepository(configService.fsFolder, fsService) : mongoRepo!;
       },
-      inject: [ConfigService, FileStorageService, MongoHotelBookingRepository],
+      inject: [
+        ConfigService, 
+        FileStorageService, 
+        ...(new ConfigService().dataType !== 'FS' ? [MongoHotelBookingRepository] : [])
+      ],
     },
     {
       provide: 'HotelBookingRepositoryPort',
       useExisting: 'HotelBookingRepository',
     },
-    MongoHotelBookingRepository,
+    ...((() => {
+      const configService = new ConfigService();
+      return configService.dataType !== 'FS' ? [MongoHotelBookingRepository] : [];
+    })()),
     CreateHotelBookingUseCase,
     GetAllHotelBookingUseCase,
     UpdateHotelBookingUseCase,

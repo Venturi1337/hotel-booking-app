@@ -11,27 +11,39 @@ import { GetAllHotelUseCase } from './application/get-all-hotel.usecase';
 import { CreateHotelUseCase } from './application/create-hotel.usecase';
 import { UpdateHotelUseCase } from './application/update-hotel.usecase';
 import { ConfigService } from '../shared/services/config.service';
+
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Hotel', schema: HotelSchema }]),
     SharedModule,
+    ...((() => {
+      const configService = new ConfigService();
+      return configService.dataType !== 'FS' ? [MongooseModule.forFeature([{ name: 'Hotel', schema: HotelSchema }])] : [];
+    })()),
   ],
   controllers: [HotelController],
   providers: [
     ConfigService,
     {
       provide: 'HotelRepository',
-      useFactory: (configService: ConfigService, fsService: FileStorageService, mongoRepo: MongoHotelRepository) => {
+      useFactory: (configService: ConfigService, fsService: FileStorageService, mongoRepo?: MongoHotelRepository) => {
+
         const dataType = configService.dataType;
-        return dataType === 'FS' ? new FSHotelRepository(configService.fsFolder, fsService) : mongoRepo;
+        return dataType === 'FS' ? new FSHotelRepository(configService.fsFolder, fsService) : mongoRepo!;
       },
-      inject: [ConfigService, FileStorageService, MongoHotelRepository],
+      inject: [
+        ConfigService, 
+        FileStorageService, 
+        ...(new ConfigService().dataType !== 'FS' ? [MongoHotelRepository] : [])
+      ],
     },
     {
       provide: 'HotelRepositoryPort',
       useExisting: 'HotelRepository',
     },
-    MongoHotelRepository,
+    ...((() => {
+      const configService = new ConfigService();
+      return configService.dataType !== 'FS' ? [MongoHotelRepository] : [];
+    })()),
     CreateHotelUseCase,
     UpdateHotelUseCase,
     GetAllHotelUseCase,

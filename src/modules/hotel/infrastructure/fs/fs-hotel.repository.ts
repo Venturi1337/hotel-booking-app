@@ -26,6 +26,14 @@ export class FSHotelRepository implements HotelRepositoryPort {
   }
 
   async update(id: string, hotel: Hotel): Promise<void> {
-    await this.fsService.updateById(this.basePath, this.entity, id, hotel);
+    const existingHotel = await this.findById(id);
+    if (!existingHotel) {
+      throw new Error(`Hotel with id ${id} not found`);
+    }
+
+    // Merge existing hotel data with new data
+    const updatedHotel = { ...existingHotel, ...hotel };
+
+    await this.fsService.updateById(this.basePath, this.entity, id, updatedHotel);
   }
 }

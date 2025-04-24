@@ -26,6 +26,13 @@ export class FSClientRepository implements ClientRepositoryPort {
   }
 
   async update(_id: string, updateClientDto: any): Promise<void> {
-    await this.fsService.updateById(this.basePath, this.entity, _id, updateClientDto);
+    const existingClient = await this.findById(_id);
+    if (!existingClient) {
+      throw new Error(`Client with id ${_id} not found`);
+    }
+
+    // Merge existing hotel data with new data
+    const updatedClient = { ...existingClient, ...updateClientDto };
+    await this.fsService.updateById(this.basePath, this.entity, _id, updatedClient);
   }
 }

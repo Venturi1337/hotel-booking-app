@@ -20,6 +20,7 @@ export class CreateHotelBookingUseCase {
         message: 'Hotel booking created successfully',
       });
     } catch (error) {
+      console.log(error);
       return GlobalApiResponse.error({
         statusCode: error.status,
         message: error.message,

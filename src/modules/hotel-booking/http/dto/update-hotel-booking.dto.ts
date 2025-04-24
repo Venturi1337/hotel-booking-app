@@ -1,17 +1,19 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateHotelBookingDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   clientId: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   hotelId: string;
 
   @IsOptional()
-  startDate: Date;
+  @IsString()
+  name: string;
 
   @IsOptional()
-  endDate: Date;
+  @IsString()
+  address: string;
 }

@@ -9,9 +9,11 @@ export class CreateHotelBookingDto {
   @IsString()
   hotelId: string;
 
-  @IsOptional()
-  startDate: Date;
+  @IsNotEmpty() 
+  @IsString()
+  name: string;
 
-  @IsOptional()
-  endDate: Date;
+  @IsNotEmpty()
+  @IsString()
+  address: string;
 }
